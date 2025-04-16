@@ -215,8 +215,7 @@ const PropertyDetails = () => {
             Video Presentation
           </h2>
           <div className="aspect-w-16 aspect-h-9 bg-gray-100 rounded-lg flex items-center justify-center">
-            <p className="text-gray-500">Video: {property.videpPresentation}</p>
-            <iframe width="560" height="315" src="https://www.youtube.com/embed/278IRQ6HSi4?si=g-8B85EFmAiLvFgd" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/278IRQ6HSi4?si=g-8B85EFmAiLvFgd" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe>
           </div>
         </div>
       )}

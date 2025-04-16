@@ -7,11 +7,13 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Layout from './components/Layout';
 import PropertyDetails from './components/PropertyDetails';
+import SheetProvider from './components/SheetProvider';
 
 function App() {
   return (
     <>
       <RecoilRoot>
+        <SheetProvider />
         <BrowserRouter>
           <ToastContainer />
           <Routes>

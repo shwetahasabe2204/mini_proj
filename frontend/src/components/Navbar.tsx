@@ -1,5 +1,8 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { Button } from "./ui/button"
+import { useSetRecoilState } from "recoil"
+import { newPropertySheet } from "@/store/SheetAtom"
 
 type MenuIconProps ={
   title:string,
@@ -37,12 +40,12 @@ const MenuIcon = ({title,path,navigate}:MenuIconProps)=>{
 
 
 const Navbar = () => {
-
+  const setIsOpen = useSetRecoilState(newPropertySheet)
   const navigate = useNavigate()
-  const [searchValue, setSearchValue] = useState("search here");
+  //const [searchValue, setSearchValue] = useState("search here");
 
   return (
-    <div className="flex bg-blue-900 justify-between">
+    <div className="flex bg-blue-900 justify-between items-center">
       <div className="flex">
         {menus.map((menu)=>(
           <div>
@@ -56,8 +59,15 @@ const Navbar = () => {
       </div>
       <div >
           
-          <input  name="myInput"  placeholder="search bar" defaultValue="" className='text-white' onChange={e =>{setSearchValue(e.target.value)}}/>
-          
+          {/* <input  name="myInput"  placeholder="search bar" defaultValue="" className='text-white' onChange={e =>{setSearchValue(e.target.value)}}/>
+           */}
+
+           <Button
+              className="text-white cursor-pointer"
+              onClick={()=>setIsOpen(true)}
+           >
+              Add listing
+           </Button>
       </div>
     </div>
   )
