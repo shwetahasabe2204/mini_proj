@@ -6,15 +6,30 @@ import { loginValidate } from "../middlewares/validators";
 import { authenticateJwt } from "../middlewares/authMiddleware";
 export const adminRouter =  Router();
 
-
-adminRouter.get('/',(req,res)=>{
-    res.send('hello form admin router')
-})
-
-
 const generateAuthToken = (id: number) => {
     return jwt.sign({ id }, process.env.JWTPRIVATEKEY!);
 };
+
+// remember to remove this
+adminRouter.post('/register', async (req: Request, res: Response) => {
+    try {
+
+        console.log(req.body)
+        const salt = await bcrypt.genSalt(Number(process.env.SALT));
+        const hashPassword = await bcrypt.hash(req.body.password, salt);
+
+        const newUser = await prisma.admin.create({
+            data: { ...req.body, password: hashPassword }
+        });
+
+        const token = generateAuthToken(newUser.id);
+
+        res.status(201).send({ authToken: token, message: "Signed in successfully", success: true });
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ message: "Internal server error", success: false });
+    }
+});
 
 adminRouter.post('/login', async (req, res) => {
     try {
