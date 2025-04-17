@@ -1,58 +1,64 @@
-import { atom, selector } from "recoil";
+import { Property } from '@/components/PropertyDetails';
+import { atom } from 'jotai';
 
+// Interfaces
 interface EditPropertySheetState {
-    isOpen:boolean,
-    id:string,
-    values:{
-        name:string
-    }
+  isOpen: boolean;
+  id: string;
+  values: Property;
 }
 
 interface SheetsState {
-    NewPropertySheet: boolean;
-    EditPropertySheet : EditPropertySheetState;
+  NewPropertySheet: boolean;
+  EditPropertySheet: EditPropertySheetState;
 }
 
+// Default property object
+const defaultProperty: Property = {
+  id: 0,
+  title: '',
+  developer: '',
+  address: '',
+  tags: [],
+  image: [],
+  videpPresentation: '',
+  locality: '',
+  projectAt: '',
+  constructionStage: '',
+  propertyDetails: [],
+  ammenties: [],
+};
+
+// Base atom for the entire sheet state
 const sheetAtom = atom<SheetsState>({
-    key: 'Sheets',
-    default: {
-        NewPropertySheet: false,
-        EditPropertySheet :{
-            isOpen:false,
-            id:'',
-            values:{
-                name:''
-            }
-        }, 
-    },
+  NewPropertySheet: false,
+  EditPropertySheet: {
+    isOpen: false,
+    id: '',
+    values: defaultProperty,
+  },
 });
 
-export const newPropertySheet = selector<boolean>({
-    key: 'NewPropertySheet',
-    get: ({ get }) => {
-        const sheets = get(sheetAtom);
-        return sheets.NewPropertySheet;
-    },
-    set: ({ set, get }, newValue) => {
-        const sheets = get(sheetAtom);
-        set(sheetAtom, {
-            ...sheets,
-            NewPropertySheet: newValue as boolean,
-        });
-    },
-});
+// Derived atom for NewPropertySheet
+export const newPropertySheetAtom = atom(
+  (get) => get(sheetAtom).NewPropertySheet,
+  (get, set, newValue: boolean) => {
+    const sheets = get(sheetAtom);
+    set(sheetAtom, {
+      ...sheets,
+      NewPropertySheet: newValue,
+    });
+  }
+);
 
-export const editPropertySheet = selector<EditPropertySheetState>({
-    key: 'EditPropertySheet',
-    get: ({ get }) => {
-        const sheets = get(sheetAtom);
-        return sheets.EditPropertySheet;
-    },
-    set: ({ set, get }, newValue) => {
-        const sheets = get(sheetAtom);
-        set(sheetAtom, {
-            ...sheets,
-            EditPropertySheet: newValue as EditPropertySheetState,
-        });
-    },
-});
+// Derived atom for EditPropertySheet
+export const editPropertySheetAtom = atom(
+  (get) => get(sheetAtom).EditPropertySheet,
+  (get, set, newValue: EditPropertySheetState) => {
+    const sheets = get(sheetAtom);
+    set(sheetAtom, {
+      ...sheets,
+      EditPropertySheet: newValue,
+    });
+  }
+);

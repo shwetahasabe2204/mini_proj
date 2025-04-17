@@ -5,7 +5,6 @@ const Dashboard = () => {
   return (
     
       <div className='grid grid-cols-4 gap-8 mt-8'>
-        
         {properties.map((property)=>(
           <Card
             id={property.id}

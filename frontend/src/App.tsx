@@ -2,7 +2,6 @@ import './App.css'
 import {BrowserRouter,Routes,Route} from 'react-router-dom'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { RecoilRoot } from 'recoil';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Layout from './components/Layout';
@@ -12,7 +11,6 @@ import SheetProvider from './components/SheetProvider';
 function App() {
   return (
     <>
-      <RecoilRoot>
         <SheetProvider />
         <BrowserRouter>
           <ToastContainer />
@@ -35,7 +33,6 @@ function App() {
             </Route>   
           </Routes>
         </BrowserRouter>
-      </RecoilRoot>
     </>
     
   );

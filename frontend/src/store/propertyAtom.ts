@@ -1,9 +1,7 @@
 import { Property } from "@/components/PropertyDetails";
-import { atom } from "recoil"
+import { atom } from "jotai";
 
-const propertyAtom = atom<Property[]>({
-    key:'Property',
-    default:[]
-})
+// Base atom for Property[]
+const propertyAtom = atom<Property[]>([]);
 
 export default propertyAtom;
