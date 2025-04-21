@@ -64,6 +64,7 @@ const PropertyForm = ({
           onChange={(e) => setValues({ developer: e.target.value })}
           disabled={disabled}
         />
+        {errors.developer && <p className="text-sm text-red-400">{errors.developer}</p>}
       </div>
 
       {/* Address */}
@@ -74,6 +75,7 @@ const PropertyForm = ({
           onChange={(e) => setValues({ address: e.target.value })}
           disabled={disabled}
         />
+        {errors.address && <p className="text-sm text-red-400">{errors.address}</p>}
       </div>
 
       {/* Video Presentation */}
@@ -84,6 +86,7 @@ const PropertyForm = ({
           onChange={(e) => setValues({ videpPresentation: e.target.value })}
           disabled={disabled}
         />
+        {errors.videpPresentation && <p className="text-sm text-red-400">{errors.videpPresentation}</p>}
       </div>
 
       {/* Locality */}
@@ -94,6 +97,7 @@ const PropertyForm = ({
           onChange={(e) => setValues({ locality: e.target.value })}
           disabled={disabled}
         />
+        {errors.locality && <p className="text-sm text-red-400">{errors.locality}</p>}
       </div>
 
       {/* Project At */}
@@ -104,6 +108,7 @@ const PropertyForm = ({
           onChange={(e) => setValues({ projectAt: e.target.value })}
           disabled={disabled}
         />
+        {errors.projectAt && <p className="text-sm text-red-400">{errors.projectAt}</p>}
       </div>
 
       {/* Construction Stage */}
@@ -114,6 +119,7 @@ const PropertyForm = ({
           onChange={(e) => setValues({ constructionStage: e.target.value })}
           disabled={disabled}
         />
+        {errors.constructionStage && <p className="text-sm text-red-400">{errors.constructionStage}</p>}
       </div>
 
       {/* Tags */}
