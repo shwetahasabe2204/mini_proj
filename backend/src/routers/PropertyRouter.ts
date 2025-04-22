@@ -48,4 +48,63 @@ propertyRouter.post('/add', authenticateJwt , async (req: Request, res: Response
       });
     }
   });
+
+  propertyRouter.get('/all', async (req: Request, res: Response) => {
+    try {
+      const properties = await prisma.property.findMany({
+        select: {
+          id: true,
+          title: true,
+          address: true,
+          image: true,
+        },
+      });
+  
+      res.status(200).send({
+        success: true,
+        data: properties,
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(500).send({
+        message: 'Internal server error',
+        success: false,
+      });
+    }
+  });
+  
+
+  propertyRouter.get('/:id', async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+  
+      const property = await prisma.property.findUnique({
+        where: { id },
+        select: {
+          id: true,
+          title: true,
+          developer: true,
+          address: true,
+          tags: true,
+          image: true,
+          videpPresentation: true,
+          locality: true,
+          projectAt: true,
+          constructionStage: true,
+          ammenties: true,
+          propertyDetails: true,
+        },
+      });
+  
+      if (!property) {
+        res.status(404).send({ success: false, message: 'Property not found' });
+        return;
+      }
+  
+      res.status(200).send({ success: true, data: property });
+    } catch (err) {
+      console.log(err);
+      res.status(500).send({ success: false, message: 'Internal server error' });
+    }
+  });
   

@@ -1,46 +1,6 @@
-// import {useParams} from "react-router-dom";
-// export type PropertyDetails={
-//     total:number,
-//     availble:number,
-//     area:number,
-//     price:number,
-// }
-
-
-// export type Property ={
-//     id:number,
-//     title:string,
-//     developer:string,
-//     address:string,
-//     tags :string[],
-//     image:string[],
-//     videpPresentation:string,
-//     locality:string,
-//     projectAt:string,
-//     constructionStage:string,
-//     propertyDetails:PropertyDetails[],
-//     ammenties:string[],
-// }
-
-// const PropertyDetails = () => {
-    
-//     const {id} = useParams();
-
-//     return (
-//         <div>{id}</div>
-//     )
-// }
-
-// export default PropertyDetails
-
-
-
-
-
-"use client";
-
+import { useEffect, useState } from "react";
+import axios from "axios";
 import { useParams } from "react-router-dom";
-import { properties } from "../constants/Properties";
 
 export type PropertyDetails = {
   total: number;
@@ -68,14 +28,30 @@ const PropertyDetails = () => {
   const { id } = useParams();
   const propertyId = id ? Number.parseInt(id) : 0;
 
-  // Find the property with the matching ID
-  const property = properties.find((p) => p.id === propertyId);
+  const [property, setProperty] = useState<Property | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
 
-  if (!property) {
-    return <div className="mt-8 text-center text-xl">Property not found</div>;
-  }
+  useEffect(() => {
+    const fetchProperty = async () => {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/property/${propertyId}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        setProperty(res.data.data);
+      } catch (err) {
+        console.error(err);
+        setNotFound(true);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // Format price to display with commas
+    fetchProperty();
+  }, [propertyId]);
+
   const formatPrice = (price: number) => {
     return price.toLocaleString("en-IN", {
       maximumFractionDigits: 0,
@@ -84,13 +60,25 @@ const PropertyDetails = () => {
     });
   };
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-96">
+        <div className="text-blue-700 font-medium text-lg">Loading...</div>
+      </div>
+    );
+  }
+
+  if (notFound || !property) {
+    return <div className="mt-8 text-center text-xl">Property not found</div>;
+  }
+
   return (
     <div className="mt-8">
       {/* Property Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-blue-900">{property.title}</h1>
         <p className="text-gray-600 mt-2">{property.address}</p>
-        <div className="flex gap-2 mt-3">
+        <div className="flex gap-2 mt-3 flex-wrap">
           {property.tags.map((tag, index) => (
             <span
               key={index}
@@ -215,7 +203,15 @@ const PropertyDetails = () => {
             Video Presentation
           </h2>
           <div className="aspect-w-16 aspect-h-9 bg-gray-100 rounded-lg flex items-center justify-center">
-            <iframe width="560" height="315" src="https://www.youtube.com/embed/278IRQ6HSi4?si=g-8B85EFmAiLvFgd" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe>
+            <iframe
+              width="560"
+              height="315"
+              src={property.videpPresentation}
+              title="YouTube video player"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              className="w-full h-96 rounded-lg"
+              allowFullScreen
+            ></iframe>
           </div>
         </div>
       )}
@@ -224,4 +220,3 @@ const PropertyDetails = () => {
 };
 
 export default PropertyDetails;
-

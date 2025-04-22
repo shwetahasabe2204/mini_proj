@@ -57,3 +57,57 @@ exports.propertyRouter.post('/add', authMiddleware_1.authenticateJwt, (req, res)
         });
     }
 }));
+exports.propertyRouter.get('/all', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const properties = yield dbconfig_1.prisma.property.findMany({
+            select: {
+                id: true,
+                title: true,
+                address: true,
+                image: true,
+            },
+        });
+        res.status(200).send({
+            success: true,
+            data: properties,
+        });
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).send({
+            message: 'Internal server error',
+            success: false,
+        });
+    }
+}));
+exports.propertyRouter.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const id = parseInt(req.params.id);
+        const property = yield dbconfig_1.prisma.property.findUnique({
+            where: { id },
+            select: {
+                id: true,
+                title: true,
+                developer: true,
+                address: true,
+                tags: true,
+                image: true,
+                videpPresentation: true,
+                locality: true,
+                projectAt: true,
+                constructionStage: true,
+                ammenties: true,
+                propertyDetails: true,
+            },
+        });
+        if (!property) {
+            res.status(404).send({ success: false, message: 'Property not found' });
+            return;
+        }
+        res.status(200).send({ success: true, data: property });
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).send({ success: false, message: 'Internal server error' });
+    }
+}));
