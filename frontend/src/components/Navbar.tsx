@@ -38,6 +38,7 @@ const MenuIcon = ({ title, path, navigate }: MenuIconProps) => {
 };
 
 const Navbar = () => {
+  const authToken = localStorage.getItem('authToken');
   const setIsOpen = useSetAtom(newPropertySheetAtom); // <-- Jotai hook
   const navigate = useNavigate();
 
@@ -51,13 +52,18 @@ const Navbar = () => {
         ))}
       </div>
       <div>
-        {/* Optional search input here */}
-        <Button
+        {authToken && <Button
+            className="text-white cursor-pointer"
+            onClick={() => setIsOpen(true)}
+          >
+            Add listing
+        </Button>}
+        {authToken && <Button
           className="text-white cursor-pointer"
           onClick={() => setIsOpen(true)}
         >
           Add listing
-        </Button>
+        </Button>}
       </div>
     </div>
   );

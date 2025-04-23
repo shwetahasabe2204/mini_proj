@@ -13,7 +13,7 @@ const Dashboard = () => {
       try {
         const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/property/all`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`, // Assuming JWT token stored in localStorage
+            Authorization: `Bearer ${localStorage.getItem('authToken')}`, // Assuming JWT token stored in localStorage
           },
         });
         setProperties(res.data.data);
