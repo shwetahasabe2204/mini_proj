@@ -8,9 +8,16 @@ interface EditPropertySheetState {
   values: Property;
 }
 
+interface FilterSheetState {
+  isOpen: boolean;
+  budget: number;
+  city: 'sangali' | 'kolhapur' | 'satara' | 'pune' | 'mumbai' | 'karad' | '';
+}
+
 interface SheetsState {
   NewPropertySheet: boolean;
   EditPropertySheet: EditPropertySheetState;
+  FilterSheet: FilterSheetState;
 }
 
 // Default property object
@@ -27,6 +34,14 @@ const defaultProperty: Property = {
   constructionStage: '',
   propertyDetails: [],
   ammenties: [],
+  amountPerFlat: 0
+};
+
+// Default filter sheet state
+const defaultFilterSheet: FilterSheetState = {
+  isOpen: false,
+  budget: 0,
+  city: '',
 };
 
 // Base atom for the entire sheet state
@@ -37,6 +52,7 @@ const sheetAtom = atom<SheetsState>({
     id: '',
     values: defaultProperty,
   },
+  FilterSheet: defaultFilterSheet,
 });
 
 // Derived atom for NewPropertySheet
@@ -59,6 +75,18 @@ export const editPropertySheetAtom = atom(
     set(sheetAtom, {
       ...sheets,
       EditPropertySheet: newValue,
+    });
+  }
+);
+
+// Derived atom for FilterSheet
+export const filterSheetAtom = atom(
+  (get) => get(sheetAtom).FilterSheet,
+  (get, set, newValue: FilterSheetState) => {
+    const sheets = get(sheetAtom);
+    set(sheetAtom, {
+      ...sheets,
+      FilterSheet: newValue,
     });
   }
 );

@@ -15,6 +15,7 @@ const authMiddleware_1 = require("../middlewares/authMiddleware");
 const validators_1 = require("../middlewares/validators");
 const dbconfig_1 = require("../config/dbconfig");
 exports.propertyRouter = (0, express_1.Router)();
+// POST /add
 exports.propertyRouter.post('/add', authMiddleware_1.authenticateJwt, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { error } = (0, validators_1.addPropertyValidate)(req.body);
@@ -38,6 +39,7 @@ exports.propertyRouter.post('/add', authMiddleware_1.authenticateJwt, (req, res)
                 projectAt: req.body.projectAt,
                 constructionStage: req.body.constructionStage,
                 ammenties: req.body.ammenties || [],
+                amountPerFlat: req.body.amountPerFlat,
                 propertyDetails: {
                     create: req.body.propertyDetails || [],
                 },
@@ -57,9 +59,37 @@ exports.propertyRouter.post('/add', authMiddleware_1.authenticateJwt, (req, res)
         });
     }
 }));
+// GET /all
 exports.propertyRouter.get('/all', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const { budget, city } = req.query;
+        const filters = {};
+        if (budget) {
+            const parsedBudget = parseInt(budget, 10);
+            if (!isNaN(parsedBudget)) {
+                filters.amountPerFlat = {
+                    lte: parsedBudget,
+                };
+            }
+        }
+        if (city && typeof city === 'string') {
+            filters.OR = [
+                {
+                    locality: {
+                        contains: city,
+                        mode: 'insensitive',
+                    },
+                },
+                {
+                    address: {
+                        contains: city,
+                        mode: 'insensitive',
+                    },
+                },
+            ];
+        }
         const properties = yield dbconfig_1.prisma.property.findMany({
+            where: filters,
             select: {
                 id: true,
                 title: true,
@@ -73,7 +103,7 @@ exports.propertyRouter.get('/all', (req, res) => __awaiter(void 0, void 0, void 
         });
     }
     catch (err) {
-        console.log(err);
+        console.error(err);
         res.status(500).send({
             message: 'Internal server error',
             success: false,
@@ -97,6 +127,7 @@ exports.propertyRouter.get('/:id', (req, res) => __awaiter(void 0, void 0, void 
                 projectAt: true,
                 constructionStage: true,
                 ammenties: true,
+                amountPerFlat: true,
                 propertyDetails: true,
             },
         });

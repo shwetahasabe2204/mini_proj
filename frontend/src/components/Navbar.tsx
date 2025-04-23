@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
 import { useSetAtom } from "jotai";
-import  {newPropertySheetAtom} from "../store/sheetAtom"; 
+import { newPropertySheetAtom, filterSheetAtom } from "../store/sheetAtom"; // ✅ Import both
 
 type MenuIconProps = {
   title: string;
@@ -28,9 +28,7 @@ const MenuIcon = ({ title, path, navigate }: MenuIconProps) => {
   return (
     <div
       className="p-4 px-8 cursor-pointer text-white hover:bg-blue-500"
-      onClick={() => {
-        navigate(path);
-      }}
+      onClick={() => navigate(path)}
     >
       {title}
     </div>
@@ -38,9 +36,22 @@ const MenuIcon = ({ title, path, navigate }: MenuIconProps) => {
 };
 
 const Navbar = () => {
-  const authToken = localStorage.getItem('authToken');
-  const setIsOpen = useSetAtom(newPropertySheetAtom); // <-- Jotai hook
+  const authToken = localStorage.getItem("authToken");
+  const setNewPropertySheet = useSetAtom(newPropertySheetAtom);
+  const setFilterSheet = useSetAtom(filterSheetAtom); // ✅ Hook for filter sheet
   const navigate = useNavigate();
+
+  const handleOpenFilter = () => {
+    setFilterSheet({
+      isOpen: true,
+      budget: 0,
+      city: '',
+    });
+  };
+
+  const handleOpenListing = () => {
+    setNewPropertySheet(true);
+  };
 
   return (
     <div className="flex bg-blue-900 justify-between items-center">
@@ -52,18 +63,16 @@ const Navbar = () => {
         ))}
       </div>
       <div>
-        {authToken && <Button
-            className="text-white cursor-pointer"
-            onClick={() => setIsOpen(true)}
-          >
+        {!authToken && (
+          <Button className="text-white cursor-pointer" onClick={handleOpenFilter}>
+            Add filter
+          </Button>
+        )}
+        {authToken && (
+          <Button className="text-white cursor-pointer" onClick={handleOpenListing}>
             Add listing
-        </Button>}
-        {authToken && <Button
-          className="text-white cursor-pointer"
-          onClick={() => setIsOpen(true)}
-        >
-          Add listing
-        </Button>}
+          </Button>
+        )}
       </div>
     </div>
   );

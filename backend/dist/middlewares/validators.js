@@ -33,8 +33,10 @@ const addPropertyValidate = (data) => {
         projectAt: zod_1.z.string().min(1, { message: 'Project date is required' }),
         constructionStage: zod_1.z.string().min(1, { message: 'Construction stage is required' }),
         ammenties: zod_1.z.array(zod_1.z.string()).optional(),
+        amountPerFlat: zod_1.z
+            .number({ invalid_type_error: 'Amount per flat must be a number' })
+            .positive({ message: 'Amount per flat must be a positive number' }),
         propertyDetails: zod_1.z.array(zod_1.z.object({
-            // Define based on what PropertyDetails contains, here's a placeholder
             key: zod_1.z.string().min(1, { message: 'Property detail key is required' }),
             value: zod_1.z.string().min(1, { message: 'Property detail value is required' }),
         })).optional(),

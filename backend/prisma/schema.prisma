@@ -25,7 +25,8 @@ model Property {
   projectAt         String
   constructionStage String
   ammenties         String[]
-
+  amountPerFlat     Decimal           
+  
   propertyDetails   PropertyDetail[]  // one-to-many relation
 
   createdAt         DateTime          @default(now())

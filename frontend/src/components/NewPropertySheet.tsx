@@ -17,10 +17,10 @@ export type NewPropertyErrorMessages = {
   title?: string;
   developer?: string;
   address?: string;
+  amountPerFlat?: string; // ✅ Added
   [key: string]: string | undefined;
 };
 
-// Default initial values for a new property
 const defaultValues: PropertyFormInput = {
   id: 0,
   title: "",
@@ -34,6 +34,7 @@ const defaultValues: PropertyFormInput = {
   constructionStage: "",
   propertyDetails: [],
   ammenties: [],
+  amountPerFlat: 0,
 };
 
 const NewPropertySheet = () => {

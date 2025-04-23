@@ -3,7 +3,7 @@ import { Plus, Save, Trash, X } from "lucide-react";
 import { NewPropertyErrorMessages } from "./NewPropertySheet";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { Property } from "@/store/sheetAtom";
+import { Property } from "./PropertyDetails";
 
 export type PropertyFormInput = Property;
 
@@ -109,6 +109,22 @@ const PropertyForm = ({
           disabled={disabled}
         />
         {errors.projectAt && <p className="text-sm text-red-400">{errors.projectAt}</p>}
+      </div>
+
+      {/* Amount Per Flat */}
+      <div className="grid gap-2">
+        <Label>Amount Per Flat (₹)</Label>
+        <Input
+          type="number"
+          value={values.amountPerFlat}
+          onChange={(e) =>
+            setValues({ amountPerFlat: parseFloat(e.target.value) || 0 })
+          }
+          disabled={disabled}
+        />
+        {errors.amountPerFlat && (
+          <p className="text-sm text-red-400">{errors.amountPerFlat}</p>
+        )}
       </div>
 
       {/* Construction Stage */}

@@ -31,9 +31,11 @@ export const addPropertyValidate = (data: any) => {
     projectAt: z.string().min(1, { message: 'Project date is required' }),
     constructionStage: z.string().min(1, { message: 'Construction stage is required' }),
     ammenties: z.array(z.string()).optional(),
+    amountPerFlat: z
+      .number({ invalid_type_error: 'Amount per flat must be a number' })
+      .positive({ message: 'Amount per flat must be a positive number' }),
     propertyDetails: z.array(
       z.object({
-        // Define based on what PropertyDetails contains, here's a placeholder
         key: z.string().min(1, { message: 'Property detail key is required' }),
         value: z.string().min(1, { message: 'Property detail value is required' }),
       })
@@ -47,4 +49,3 @@ export const addPropertyValidate = (data: any) => {
     return { error: e.errors };
   }
 };
-

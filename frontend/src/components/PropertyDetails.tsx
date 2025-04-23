@@ -20,8 +20,9 @@ export type Property = {
   locality: string;
   projectAt: string;
   constructionStage: string;
-  propertyDetails: PropertyDetails[];
   ammenties: string[];
+  propertyDetails: { key: string; value: string }[];
+  amountPerFlat: number; 
 };
 
 const PropertyDetails = () => {

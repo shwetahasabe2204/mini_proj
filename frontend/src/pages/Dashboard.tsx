@@ -3,19 +3,35 @@ import { useAtom } from 'jotai';
 import axios from 'axios';
 import Card from '@/components/Card';
 import propertyAtom from '@/store/propertyAtom';
+import { filterSheetAtom } from '@/store/sheetAtom';
 
 const Dashboard = () => {
   const [properties, setProperties] = useAtom(propertyAtom);
+  const [filter] = useAtom(filterSheetAtom);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProperties = async () => {
       try {
+        setLoading(true);
+
+        const params: Record<string, string | number> = {};
+
+        if (filter.budget > 0) {
+          params.budget = filter.budget;
+        }
+
+        if (filter.city) {
+          params.city = filter.city;
+        }
+
         const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/property/all`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('authToken')}`, // Assuming JWT token stored in localStorage
+            Authorization: `Bearer ${localStorage.getItem('authToken')}`, // optional: can remove if not required
           },
+          params,
         });
+
         setProperties(res.data.data);
       } catch (err) {
         console.error('Failed to fetch properties', err);
@@ -25,7 +41,7 @@ const Dashboard = () => {
     };
 
     fetchProperties();
-  }, [setProperties]);
+  }, [filter, setProperties]);
 
   if (loading) {
     return (
