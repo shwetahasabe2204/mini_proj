@@ -25,9 +25,9 @@ model Property {
   projectAt         String
   constructionStage String
   ammenties         String[]
-
+  latitude          Float?            // Add this field
+  longitude         Float?            // Add this field
   propertyDetails   PropertyDetail[]  // one-to-many relation
-
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
 }
