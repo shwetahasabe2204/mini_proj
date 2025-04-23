@@ -1,76 +1,111 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useEffect, useState } from 'react'
+import axios from 'axios'
+import { useParams } from 'react-router-dom'
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
+import 'leaflet/dist/leaflet.css'
+import L from 'leaflet'
+
+// Fix for default marker icon in react-leaflet
+// This is needed because the default markers don't work properly in React builds
+// We need to manually set the icon paths
+const defaultIcon = L.icon({
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  iconRetinaUrl:
+    'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  tooltipAnchor: [16, -28],
+  shadowSize: [41, 41],
+})
+
+L.Marker.prototype.options.icon = defaultIcon
 
 export type PropertyDetails = {
-  total: number;
-  availble: number;
-  area: number;
-  price: number;
-};
+  total: number
+  availble: number
+  area: number
+  price: number
+}
 
 export type Property = {
-  id: number;
-  title: string;
-  developer: string;
-  address: string;
-  tags: string[];
-  image: string[];
-  videpPresentation: string;
-  locality: string;
-  projectAt: string;
-  constructionStage: string;
-  propertyDetails: PropertyDetails[];
-  ammenties: string[];
-};
+  id: number
+  title: string
+  developer: string
+  address: string
+  tags: string[]
+  image: string[]
+  videpPresentation: string
+  locality: string
+  projectAt: string
+  constructionStage: string
+  propertyDetails: PropertyDetails[]
+  ammenties: string[]
+  // Add new properties for map coordinates
+  latitude?: number
+  longitude?: number
+}
 
 const PropertyDetails = () => {
-  const { id } = useParams();
-  const propertyId = id ? Number.parseInt(id) : 0;
+  const { id } = useParams()
+  const propertyId = id ? Number.parseInt(id) : 0
 
-  const [property, setProperty] = useState<Property | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [notFound, setNotFound] = useState(false);
+  const [property, setProperty] = useState<Property | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [notFound, setNotFound] = useState(false)
+
+  // Default map position - can be centered on a city in India if property doesn't have coordinates
+  const defaultPosition: [number, number] = [20.5937, 78.9629] // Center of India
 
   useEffect(() => {
     const fetchProperty = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/property/${propertyId}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        setProperty(res.data.data);
+        const res = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/property/${propertyId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+          }
+        )
+        setProperty(res.data.data)
       } catch (err) {
-        console.error(err);
-        setNotFound(true);
+        console.error(err)
+        setNotFound(true)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
-    fetchProperty();
-  }, [propertyId]);
+    fetchProperty()
+  }, [propertyId])
 
   const formatPrice = (price: number) => {
-    return price.toLocaleString("en-IN", {
+    return price.toLocaleString('en-IN', {
       maximumFractionDigits: 0,
-      style: "currency",
-      currency: "INR",
-    });
-  };
+      style: 'currency',
+      currency: 'INR',
+    })
+  }
 
   if (loading) {
     return (
       <div className="flex justify-center items-center h-96">
         <div className="text-blue-700 font-medium text-lg">Loading...</div>
       </div>
-    );
+    )
   }
 
   if (notFound || !property) {
-    return <div className="mt-8 text-center text-xl">Property not found</div>;
+    return <div className="mt-8 text-center text-xl">Property not found</div>
   }
+
+  // Get map position - use property coordinates if available, otherwise use default
+  const mapPosition: [number, number] =
+    property.latitude && property.longitude
+      ? [property.latitude, property.longitude]
+      : defaultPosition
 
   return (
     <div className="mt-8">
@@ -94,7 +129,7 @@ const PropertyDetails = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         <div className="col-span-1 md:col-span-2">
           <img
-            src={property.image[0] || "/placeholder.svg"}
+            src={property.image[0] || '/placeholder.svg'}
             alt={property.title}
             className="w-full h-96 object-cover rounded-lg shadow-md"
           />
@@ -102,7 +137,7 @@ const PropertyDetails = () => {
         {property.image.slice(1).map((img, index) => (
           <img
             key={index}
-            src={img || "/placeholder.svg"}
+            src={img || '/placeholder.svg'}
             alt={`${property.title} ${index + 1}`}
             className="w-full h-48 object-cover rounded-lg shadow-md"
           />
@@ -137,7 +172,7 @@ const PropertyDetails = () => {
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow-md">
+          <div className="bg-white p-6 rounded-lg shadow-md mb-6">
             <h2 className="text-xl font-semibold text-blue-900 mb-4">
               Amenities
             </h2>
@@ -148,6 +183,34 @@ const PropertyDetails = () => {
                   <p>{amenity}</p>
                 </div>
               ))}
+            </div>
+          </div>
+
+          {/* Property Location Map */}
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <h2 className="text-xl font-semibold text-blue-900 mb-4">
+              Property Location
+            </h2>
+            <div className="h-96 rounded-lg overflow-hidden">
+              <MapContainer
+                center={mapPosition}
+                zoom={13}
+                style={{ height: '100%', width: '100%' }}
+              >
+                <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+                <Marker position={mapPosition}>
+                  <Popup>
+                    <div>
+                      <strong>{property.title}</strong>
+                      <br />
+                      {property.address}
+                    </div>
+                  </Popup>
+                </Marker>
+              </MapContainer>
             </div>
           </div>
         </div>
@@ -216,7 +279,7 @@ const PropertyDetails = () => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default PropertyDetails;
+export default PropertyDetails

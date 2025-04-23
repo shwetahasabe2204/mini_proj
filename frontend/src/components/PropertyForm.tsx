@@ -1,21 +1,36 @@
-import { Label } from "@radix-ui/react-label";
-import { Plus, Save, Trash, X } from "lucide-react";
-import { NewPropertyErrorMessages } from "./NewPropertySheet";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import { Property } from "@/store/sheetAtom";
+import { Label } from '@radix-ui/react-label'
+import { Plus, Save, Trash, X } from 'lucide-react'
+import { NewPropertyErrorMessages } from './NewPropertySheet'
+import { Input } from './ui/input'
+import { Button } from './ui/button'
+import MapPicker from './MapPicker.tsx'
 
-export type PropertyFormInput = Property;
+export type PropertyFormInput = {
+  id: number
+  title: string
+  developer: string
+  address: string
+  tags: string[]
+  image: string[]
+  videpPresentation: string
+  locality: string
+  projectAt: string
+  constructionStage: string
+  propertyDetails: any[]
+  ammenties: string[]
+  latitude?: number
+  longitude?: number
+}
 
 type PropertyFormProps = {
-  id?: string;
-  values: PropertyFormInput;
-  onSubmit: () => void;
-  onDelete: () => void;
-  disabled?: boolean;
-  errors: NewPropertyErrorMessages;
-  setValues: (value: Partial<PropertyFormInput>) => void;
-};
+  id?: string
+  values: PropertyFormInput
+  onSubmit: () => void
+  onDelete: () => void
+  disabled?: boolean
+  errors: NewPropertyErrorMessages
+  setValues: (value: Partial<PropertyFormInput>) => void
+}
 
 const PropertyForm = ({
   id,
@@ -27,21 +42,37 @@ const PropertyForm = ({
   setValues,
 }: PropertyFormProps) => {
   // Handle list inputs
-  const handleArrayChange = (field: keyof PropertyFormInput, index: number, newValue: string) => {
-    const arr = [...(values[field] as string[])];
-    arr[index] = newValue;
-    setValues({ [field]: arr });
-  };
+  const handleArrayChange = (
+    field: keyof PropertyFormInput,
+    index: number,
+    newValue: string
+  ) => {
+    const arr = [...(values[field] as string[])]
+    arr[index] = newValue
+    setValues({ [field]: arr })
+  }
 
   const addToArrayField = (field: keyof PropertyFormInput) => {
-    setValues({ [field]: [...(values[field] as string[]), ""] });
-  };
+    setValues({ [field]: [...(values[field] as string[]), ''] })
+  }
 
-  const removeFromArrayField = (field: keyof PropertyFormInput, index: number) => {
-    const arr = [...(values[field] as string[])];
-    arr.splice(index, 1);
-    setValues({ [field]: arr });
-  };
+  const removeFromArrayField = (
+    field: keyof PropertyFormInput,
+    index: number
+  ) => {
+    const arr = [...(values[field] as string[])]
+    arr.splice(index, 1)
+    setValues({ [field]: arr })
+  }
+
+  // Handle number input changes
+  const handleNumberChange = (
+    field: keyof PropertyFormInput,
+    value: string
+  ) => {
+    const numValue = value === '' ? undefined : Number(value)
+    setValues({ [field]: numValue })
+  }
 
   return (
     <div className="grid gap-4 mx-4 overflow-y-auto">
@@ -64,7 +95,9 @@ const PropertyForm = ({
           onChange={(e) => setValues({ developer: e.target.value })}
           disabled={disabled}
         />
-        {errors.developer && <p className="text-sm text-red-400">{errors.developer}</p>}
+        {errors.developer && (
+          <p className="text-sm text-red-400">{errors.developer}</p>
+        )}
       </div>
 
       {/* Address */}
@@ -75,7 +108,51 @@ const PropertyForm = ({
           onChange={(e) => setValues({ address: e.target.value })}
           disabled={disabled}
         />
-        {errors.address && <p className="text-sm text-red-400">{errors.address}</p>}
+        {errors.address && (
+          <p className="text-sm text-red-400">{errors.address}</p>
+        )}
+      </div>
+
+      {/* Map Coordinates */}
+      <div className="grid grid-cols-2 gap-4">
+        <div className="grid gap-2">
+          <Label>Latitude</Label>
+          <Input
+            type="number"
+            step="0.000001"
+            value={values.latitude !== undefined ? values.latitude : ''}
+            onChange={(e) => handleNumberChange('latitude', e.target.value)}
+            disabled={disabled}
+            placeholder="e.g. 19.0760"
+          />
+          {errors.latitude && (
+            <p className="text-sm text-red-400">{errors.latitude}</p>
+          )}
+        </div>
+        <div className="grid gap-2">
+          <Label>Longitude</Label>
+          <Input
+            type="number"
+            step="0.000001"
+            value={values.longitude !== undefined ? values.longitude : ''}
+            onChange={(e) => handleNumberChange('longitude', e.target.value)}
+            disabled={disabled}
+            placeholder="e.g. 72.8777"
+          />
+          {errors.longitude && (
+            <p className="text-sm text-red-400">{errors.longitude}</p>
+          )}
+        </div>
+      </div>
+      <div className="grid gap-2">
+        <Label>Pick Location from Map</Label>
+        <MapPicker
+          latitude={values.latitude}
+          longitude={values.longitude}
+          setCoordinates={(lat, lng) =>
+            setValues({ latitude: lat, longitude: lng })
+          }
+        />
       </div>
 
       {/* Video Presentation */}
@@ -86,7 +163,9 @@ const PropertyForm = ({
           onChange={(e) => setValues({ videpPresentation: e.target.value })}
           disabled={disabled}
         />
-        {errors.videpPresentation && <p className="text-sm text-red-400">{errors.videpPresentation}</p>}
+        {errors.videpPresentation && (
+          <p className="text-sm text-red-400">{errors.videpPresentation}</p>
+        )}
       </div>
 
       {/* Locality */}
@@ -97,7 +176,9 @@ const PropertyForm = ({
           onChange={(e) => setValues({ locality: e.target.value })}
           disabled={disabled}
         />
-        {errors.locality && <p className="text-sm text-red-400">{errors.locality}</p>}
+        {errors.locality && (
+          <p className="text-sm text-red-400">{errors.locality}</p>
+        )}
       </div>
 
       {/* Project At */}
@@ -108,7 +189,9 @@ const PropertyForm = ({
           onChange={(e) => setValues({ projectAt: e.target.value })}
           disabled={disabled}
         />
-        {errors.projectAt && <p className="text-sm text-red-400">{errors.projectAt}</p>}
+        {errors.projectAt && (
+          <p className="text-sm text-red-400">{errors.projectAt}</p>
+        )}
       </div>
 
       {/* Construction Stage */}
@@ -119,7 +202,9 @@ const PropertyForm = ({
           onChange={(e) => setValues({ constructionStage: e.target.value })}
           disabled={disabled}
         />
-        {errors.constructionStage && <p className="text-sm text-red-400">{errors.constructionStage}</p>}
+        {errors.constructionStage && (
+          <p className="text-sm text-red-400">{errors.constructionStage}</p>
+        )}
       </div>
 
       {/* Tags */}
@@ -129,15 +214,24 @@ const PropertyForm = ({
           <div className="flex gap-2 items-center" key={i}>
             <Input
               value={tag}
-              onChange={(e) => handleArrayChange("tags", i, e.target.value)}
+              onChange={(e) => handleArrayChange('tags', i, e.target.value)}
               disabled={disabled}
             />
-            <Button variant="ghost" onClick={() => removeFromArrayField("tags", i)} disabled={disabled}>
+            <Button
+              variant="ghost"
+              onClick={() => removeFromArrayField('tags', i)}
+              disabled={disabled}
+            >
               <X size={16} />
             </Button>
           </div>
         ))}
-        <Button onClick={() => addToArrayField("tags")} disabled={disabled} variant="outline" size="sm">
+        <Button
+          onClick={() => addToArrayField('tags')}
+          disabled={disabled}
+          variant="outline"
+          size="sm"
+        >
           Add Tag
         </Button>
       </div>
@@ -145,21 +239,28 @@ const PropertyForm = ({
       {/* Images */}
       <div className="grid gap-2">
         <Label>Image URLs</Label>
-       
-        { 
-          values.image.map((img, i) => (
+        {values.image.map((img, i) => (
           <div className="flex gap-2 items-center" key={i}>
             <Input
               value={img}
-              onChange={(e) => handleArrayChange("image", i, e.target.value)}
+              onChange={(e) => handleArrayChange('image', i, e.target.value)}
               disabled={disabled}
             />
-            <Button variant="ghost" onClick={() => removeFromArrayField("image", i)} disabled={disabled}>
+            <Button
+              variant="ghost"
+              onClick={() => removeFromArrayField('image', i)}
+              disabled={disabled}
+            >
               <X size={16} />
             </Button>
           </div>
         ))}
-        <Button onClick={() => addToArrayField("image")} disabled={disabled} variant="outline" size="sm">
+        <Button
+          onClick={() => addToArrayField('image')}
+          disabled={disabled}
+          variant="outline"
+          size="sm"
+        >
           Add Image
         </Button>
       </div>
@@ -171,15 +272,26 @@ const PropertyForm = ({
           <div className="flex gap-2 items-center" key={i}>
             <Input
               value={item}
-              onChange={(e) => handleArrayChange("ammenties", i, e.target.value)}
+              onChange={(e) =>
+                handleArrayChange('ammenties', i, e.target.value)
+              }
               disabled={disabled}
             />
-            <Button variant="ghost" onClick={() => removeFromArrayField("ammenties", i)} disabled={disabled}>
+            <Button
+              variant="ghost"
+              onClick={() => removeFromArrayField('ammenties', i)}
+              disabled={disabled}
+            >
               <X size={16} />
             </Button>
           </div>
         ))}
-        <Button onClick={() => addToArrayField("ammenties")} disabled={disabled} variant="outline" size="sm">
+        <Button
+          onClick={() => addToArrayField('ammenties')}
+          disabled={disabled}
+          variant="outline"
+          size="sm"
+        >
           Add Amenity
         </Button>
       </div>
@@ -189,12 +301,12 @@ const PropertyForm = ({
         <Button className="w-full" onClick={onSubmit} disabled={disabled}>
           {!id && <Plus className="mr-2" />}
           {!!id && <Save className="mr-2" />}
-          {!id && "Create Property"}
-          {!!id && "Save Changes"}
+          {!id && 'Create Property'}
+          {!!id && 'Save Changes'}
         </Button>
         {!!id && (
           <Button
-            variant={"outline"}
+            variant={'outline'}
             className="w-full"
             onClick={onDelete}
             disabled={disabled}
@@ -205,7 +317,7 @@ const PropertyForm = ({
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default PropertyForm;
+export default PropertyForm

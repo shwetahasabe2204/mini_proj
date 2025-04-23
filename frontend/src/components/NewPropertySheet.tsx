@@ -1,68 +1,70 @@
-import { useAtom } from "jotai"; // changed from recoil
-import { useState } from "react";
-import axios from "axios";
-import { toast } from "react-toastify";
-import { newPropertySheetAtom } from "../store/sheetAtom"; // changed import to Jotai atom
+import { useAtom } from 'jotai' // changed from recoil
+import { useState } from 'react'
+import axios from 'axios'
+import { toast } from 'react-toastify'
+import { newPropertySheetAtom } from '../store/sheetAtom' // changed import to Jotai atom
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from "./ui/sheet";
-import PropertyForm, { PropertyFormInput } from "./PropertyForm";
-import propertyAtom from "@/store/propertyAtom"; // stays the same
+} from './ui/sheet'
+import PropertyForm, { PropertyFormInput } from './PropertyForm'
+import propertyAtom from '@/store/propertyAtom' // stays the same
 
 export type NewPropertyErrorMessages = {
-  title?: string;
-  developer?: string;
-  address?: string;
-  [key: string]: string | undefined;
-};
+  title?: string
+  developer?: string
+  address?: string
+  latitude?: string
+  longitude?: string
+  [key: string]: string | undefined
+}
 
 // Default initial values for a new property
 const defaultValues: PropertyFormInput = {
   id: 0,
-  title: "",
-  developer: "",
-  address: "",
+  title: '',
+  developer: '',
+  address: '',
   tags: [],
   image: [],
-  videpPresentation: "",
-  locality: "",
-  projectAt: "",
-  constructionStage: "",
+  videpPresentation: '',
+  locality: '',
+  projectAt: '',
+  constructionStage: '',
   propertyDetails: [],
   ammenties: [],
-};
+  latitude: undefined,
+  longitude: undefined,
+}
 
 const NewPropertySheet = () => {
   //const setPropertys = useSetRecoilState(propertyAtom)
-  const [isOpen, setIsOpen] = useAtom(newPropertySheetAtom); // changed from useRecoilState
-
-  const onClose = () => setIsOpen(false);
-
-  const [values, setValues] = useState<PropertyFormInput>(defaultValues);
+  const [isOpen, setIsOpen] = useAtom(newPropertySheetAtom) // changed from useRecoilState
+  const onClose = () => setIsOpen(false)
+  const [values, setValues] = useState<PropertyFormInput>(defaultValues)
 
   const setValue = (newValues: Partial<PropertyFormInput>) => {
     setValues((values) => ({
       ...values,
       ...newValues,
-    }));
-  };
+    }))
+  }
 
-  const [errors, setErrors] = useState<NewPropertyErrorMessages>({});
-  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<NewPropertyErrorMessages>({})
+  const [isLoading, setIsLoading] = useState(false)
 
   const addProperty = async () => {
     try {
-      setIsLoading(true); // Set loading to true
-      setErrors({}); // Clear previous errors
+      setIsLoading(true) // Set loading to true
+      setErrors({}) // Clear previous errors
 
-      const token = localStorage.getItem("authToken");
+      const token = localStorage.getItem('authToken')
       if (!token) {
-        toast.error("No token found");
-        return;
+        toast.error('No token found')
+        return
       }
 
       const response = await axios.post(
@@ -73,27 +75,27 @@ const NewPropertySheet = () => {
             Authorization: `Bearer ${token}`,
           },
         }
-      );
+      )
 
       if (response?.data.success) {
         //setPropertys((prev)=>([...prev,response.data.data]))
-        onClose();
-        toast.success(response?.data.message);
+        onClose()
+        toast.success(response?.data.message)
       } else {
-        toast.error(response?.data.message);
+        toast.error(response?.data.message)
       }
     } catch (err: any) {
       if (err.response?.data?.errors) {
-        setErrors(err.response.data.errors);
+        setErrors(err.response.data.errors)
       } else if (err.response?.data?.message) {
-        toast.error(err.response.data.message);
+        toast.error(err.response.data.message)
       } else {
-        toast.error("Something went wrong!");
+        toast.error('Something went wrong!')
       }
     } finally {
-      setIsLoading(false); // Set loading to false
+      setIsLoading(false) // Set loading to false
     }
-  };
+  }
 
   return (
     <Sheet open={isOpen} onOpenChange={() => onClose()}>
@@ -114,7 +116,7 @@ const NewPropertySheet = () => {
         />
       </SheetContent>
     </Sheet>
-  );
-};
+  )
+}
 
-export default NewPropertySheet;
+export default NewPropertySheet

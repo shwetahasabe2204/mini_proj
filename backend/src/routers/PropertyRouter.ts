@@ -1,22 +1,24 @@
-import { Request, Response, Router } from "express"
-import { authenticateJwt } from "../middlewares/authMiddleware";
-import { addPropertyValidate } from "../middlewares/validators";
-import { prisma } from "../config/dbconfig";
+import { Request, Response, Router } from 'express'
+import { authenticateJwt } from '../middlewares/authMiddleware'
+import { addPropertyValidate } from '../middlewares/validators'
+import { prisma } from '../config/dbconfig'
 
-export const propertyRouter =  Router();
-propertyRouter.post('/add', authenticateJwt , async (req: Request, res: Response) => {
+export const propertyRouter = Router()
+propertyRouter.post(
+  '/add',
+  authenticateJwt,
+  async (req: Request, res: Response) => {
     try {
-      const { error } = addPropertyValidate(req.body);
-  
+      const { error } = addPropertyValidate(req.body)
       if (error) {
-        const errors: Record<string, string> = {};
+        const errors: Record<string, string> = {}
         error.forEach((err: { path: string[]; message: string }) => {
-          errors[err.path[0]] = err.message;
-        });
-        res.status(400).send({ errors, success: false });
-        return;
+          errors[err.path[0]] = err.message
+        })
+        res.status(400).send({ errors, success: false })
+        return
       }
-  
+
       const newProperty = await prisma.property.create({
         data: {
           title: req.body.title,
@@ -29,82 +31,83 @@ propertyRouter.post('/add', authenticateJwt , async (req: Request, res: Response
           projectAt: req.body.projectAt,
           constructionStage: req.body.constructionStage,
           ammenties: req.body.ammenties || [],
+          latitude: req.body.latitude || null, // Add this line
+          longitude: req.body.longitude || null, // Add this line
           propertyDetails: {
             create: req.body.propertyDetails || [],
           },
         },
-      });
-  
+      })
+
       res.status(201).send({
         success: true,
         message: 'Property added successfully',
         data: newProperty,
-      });
+      })
     } catch (err) {
-      console.log(err);
+      console.log(err)
       res.status(500).send({
         message: 'Internal server error',
         success: false,
-      });
+      })
     }
-  });
+  }
+)
+propertyRouter.get('/all', async (req: Request, res: Response) => {
+  try {
+    const properties = await prisma.property.findMany({
+      select: {
+        id: true,
+        title: true,
+        address: true,
+        image: true,
+      },
+    })
 
-  propertyRouter.get('/all', async (req: Request, res: Response) => {
-    try {
-      const properties = await prisma.property.findMany({
-        select: {
-          id: true,
-          title: true,
-          address: true,
-          image: true,
-        },
-      });
-  
-      res.status(200).send({
-        success: true,
-        data: properties,
-      });
-    } catch (err) {
-      console.log(err);
-      res.status(500).send({
-        message: 'Internal server error',
-        success: false,
-      });
-    }
-  });
-  
+    res.status(200).send({
+      success: true,
+      data: properties,
+    })
+  } catch (err) {
+    console.log(err)
+    res.status(500).send({
+      message: 'Internal server error',
+      success: false,
+    })
+  }
+})
 
-  propertyRouter.get('/:id', async (req: Request, res: Response) => {
-    try {
-      const id = parseInt(req.params.id);
-  
-      const property = await prisma.property.findUnique({
-        where: { id },
-        select: {
-          id: true,
-          title: true,
-          developer: true,
-          address: true,
-          tags: true,
-          image: true,
-          videpPresentation: true,
-          locality: true,
-          projectAt: true,
-          constructionStage: true,
-          ammenties: true,
-          propertyDetails: true,
-        },
-      });
-  
-      if (!property) {
-        res.status(404).send({ success: false, message: 'Property not found' });
-        return;
-      }
-  
-      res.status(200).send({ success: true, data: property });
-    } catch (err) {
-      console.log(err);
-      res.status(500).send({ success: false, message: 'Internal server error' });
+propertyRouter.get('/:id', async (req: Request, res: Response) => {
+  try {
+    const id = parseInt(req.params.id)
+    const property = await prisma.property.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        title: true,
+        developer: true,
+        address: true,
+        tags: true,
+        image: true,
+        videpPresentation: true,
+        locality: true,
+        projectAt: true,
+        constructionStage: true,
+        ammenties: true,
+        latitude: true, // Add this line
+        longitude: true, // Add this line
+        propertyDetails: true,
+      },
+    })
+
+    if (!property) {
+      res.status(404).send({ success: false, message: 'Property not found' })
+      return
     }
-  });
-  
+
+    res.status(200).send({ success: true, data: property })
+  } catch (err) {
+    console.log(err)
+    res.status(500).send({ success: false, message: 'Internal server error' })
+  }
+})
