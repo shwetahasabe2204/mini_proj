@@ -20,13 +20,14 @@ model Property {
   address           String
   tags              String[]
   image             String[]
-  videpPresentation String?
+  videoPresentation String?
   locality          String
   projectAt         String
   constructionStage String
-  ammenties         String[]
+  amenties         String[]
   amountPerFlat     Decimal           
-  
+  latitude          Float?            // Add this field
+  longitude         Float?            // Add this field
   propertyDetails   PropertyDetail[]  // one-to-many relation
 
   createdAt         DateTime          @default(now())

@@ -1,7 +1,7 @@
-import { Request, Response, Router } from "express";
-import { authenticateJwt } from "../middlewares/authMiddleware";
-import { addPropertyValidate } from "../middlewares/validators";
-import { prisma } from "../config/dbconfig";
+import { Request, Response, Router } from 'express';
+import { authenticateJwt } from '../middlewares/authMiddleware';
+import { addPropertyValidate } from '../middlewares/validators';
+import { prisma } from '../config/dbconfig';
 
 export const propertyRouter = Router();
 
@@ -26,12 +26,14 @@ propertyRouter.post('/add', authenticateJwt, async (req: Request, res: Response)
         address: req.body.address,
         tags: req.body.tags || [],
         image: req.body.image || [],
-        videpPresentation: req.body.videpPresentation || '',
+        videoPresentation: req.body.videoPresentation || '',
         locality: req.body.locality,
         projectAt: req.body.projectAt,
         constructionStage: req.body.constructionStage,
-        ammenties: req.body.ammenties || [],
+        amenties: req.body.ammenties || [],
         amountPerFlat: req.body.amountPerFlat,
+        latitude: req.body.latitude || null,
+        longitude: req.body.longitude || null,
         propertyDetails: {
           create: req.body.propertyDetails || [],
         },
@@ -44,13 +46,14 @@ propertyRouter.post('/add', authenticateJwt, async (req: Request, res: Response)
       data: newProperty,
     });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).send({
       message: 'Internal server error',
       success: false,
     });
   }
 });
+
 // GET /all
 propertyRouter.get('/all', async (req: Request, res: Response) => {
   try {
@@ -107,7 +110,7 @@ propertyRouter.get('/all', async (req: Request, res: Response) => {
   }
 });
 
-
+// GET /:id
 propertyRouter.get('/:id', async (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params.id);
@@ -121,12 +124,14 @@ propertyRouter.get('/:id', async (req: Request, res: Response) => {
         address: true,
         tags: true,
         image: true,
-        videpPresentation: true,
+        videoPresentation: true,
         locality: true,
         projectAt: true,
         constructionStage: true,
-        ammenties: true,
+        amenties: true,
         amountPerFlat: true,
+        latitude: true,
+        longitude: true,
         propertyDetails: true,
       },
     });
@@ -138,7 +143,7 @@ propertyRouter.get('/:id', async (req: Request, res: Response) => {
 
     res.status(200).send({ success: true, data: property });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).send({ success: false, message: 'Internal server error' });
   }
 });

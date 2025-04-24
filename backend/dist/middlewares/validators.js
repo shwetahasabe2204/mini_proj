@@ -27,19 +27,34 @@ const addPropertyValidate = (data) => {
         developer: zod_1.z.string().min(1, { message: 'Developer is required' }),
         address: zod_1.z.string().min(1, { message: 'Address is required' }),
         tags: zod_1.z.array(zod_1.z.string()).optional(),
-        image: zod_1.z.array(zod_1.z.string().url({ message: 'Image must be a valid URL' })).optional(),
-        videpPresentation: zod_1.z.string().url({ message: 'Video presentation must be a valid URL' }).optional(),
+        image: zod_1.z
+            .array(zod_1.z.string().url({ message: 'Image must be a valid URL' }))
+            .optional(),
+        videoPresentation: zod_1.z
+            .string()
+            .url({ message: 'Video presentation must be a valid URL' })
+            .optional(),
         locality: zod_1.z.string().min(1, { message: 'Locality is required' }),
         projectAt: zod_1.z.string().min(1, { message: 'Project date is required' }),
-        constructionStage: zod_1.z.string().min(1, { message: 'Construction stage is required' }),
-        ammenties: zod_1.z.array(zod_1.z.string()).optional(),
+        constructionStage: zod_1.z
+            .string()
+            .min(1, { message: 'Construction stage is required' }),
+        amenties: zod_1.z.array(zod_1.z.string()).optional(),
         amountPerFlat: zod_1.z
             .number({ invalid_type_error: 'Amount per flat must be a number' })
             .positive({ message: 'Amount per flat must be a positive number' }),
-        propertyDetails: zod_1.z.array(zod_1.z.object({
-            key: zod_1.z.string().min(1, { message: 'Property detail key is required' }),
-            value: zod_1.z.string().min(1, { message: 'Property detail value is required' }),
-        })).optional(),
+        latitude: zod_1.z.number().min(-90).max(90).optional().nullable(),
+        longitude: zod_1.z.number().min(-180).max(180).optional().nullable(),
+        propertyDetails: zod_1.z
+            .array(zod_1.z.object({
+            key: zod_1.z
+                .string()
+                .min(1, { message: 'Property detail key is required' }),
+            value: zod_1.z
+                .string()
+                .min(1, { message: 'Property detail value is required' }),
+        }))
+            .optional(),
     });
     try {
         schema.parse(data);
